@@ -1,7 +1,13 @@
 {
     "black_list": {
-        "google.com": "1.1.1.1",
-        "facebook.com": "2.2.2.2"
+        "google.com": {
+            "ipv4": "1.1.1.1",
+            "ipv6": "2001:4860:4860::8888"
+        },
+        "facebook.com": {
+            "ipv4": "2.2.2.2",
+            "ipv6": "2001:4860:4860::8844"
+        }
     },
     "upstream_server":
     {

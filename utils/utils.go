@@ -7,7 +7,10 @@ import (
 )
 
 type Config struct {
-	BlackList      map[string]string `json:"black_list"`
+	BlackList map[string]struct {
+		IPv4 string `json:"ipv4"`
+		IPv6 string `json:"ipv6"`
+	} `json:"black_list"`
 	UpstreamServer struct {
 		IP   string `json:"ip"`
 		Port int    `json:"port"`
