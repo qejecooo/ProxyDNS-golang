@@ -13,7 +13,6 @@ import (
 func main() {
 	parser := argparse.NewParser("dns", "DNS server")
 
-	// start server
 	port := parser.Int("p", "port", &argparse.Options{Required: true, Help: "Port where the server will be running"})
 	address := parser.String("a", "address", &argparse.Options{Required: false, Default: "127.0.0.1", Help: "Address where the server will be running"})
 	protocol := parser.Selector("t", "protocol", []string{"udp", "tcp"}, &argparse.Options{Required: false, Default: "udp", Help: "Protocol to use"})
@@ -25,7 +24,11 @@ func main() {
 
 	dns.HandleFunc(".", handler.HandleDNS)
 	server := &dns.Server{Addr: *address + ":" + strconv.Itoa(*port), Net: *protocol}
-	log.Printf("Starting at %s, using %s", server.Addr, *protocol)
+	log.Printf("Starting at %s, using %s", server.Addr, server.Net)
+
+	os.Setenv("port", strconv.Itoa(*port))
+	os.Setenv("address", *address)
+	os.Setenv("protocol", *protocol)
 
 	err = server.ListenAndServe()
 	defer server.Shutdown()

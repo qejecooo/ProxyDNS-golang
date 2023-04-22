@@ -5,26 +5,35 @@ import (
 	"log"
 	"net"
 
+	//"os"
+	"strconv"
+
 	"example.com/dns/utils"
 )
 
-func ResolveDomainName(domain_name string) (string, error) {
+func ResolveDomainName(domain_name string, ip_version string) (string, error) {
 	config, _ := utils.ParseJson()
-	log.Printf("Upstream DNS: %s:%d\n", config.UpstreamServer.IP, config.UpstreamServer.Port)
-	upstream_dns := config.UpstreamServer.IP + ":" + string(config.UpstreamServer.Port)
+
+	upstream_dns := config.UpstreamServer.IP + ":" + strconv.Itoa(config.UpstreamServer.Port)
 
 	resolver := &net.Resolver{
 		PreferGo: true,
-		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
-			return net.Dial(protocol, upstream_dns)
+		Dial: func(ctx context.Context, _, _ string) (net.Conn, error) {
+			return net.Dial("tcp", upstream_dns)
 		},
 	}
 
-	ips, err := resolver.LookupHost(context.Background(), domain_name)
+	if config.BlackList[domain_name[:len(domain_name)-1]] != "" {
+		log.Printf("Domain name is blacklisted\n")
+		return config.BlackList[domain_name[:len(domain_name)-1]], nil
+	}
+
+	ips, err := resolver.LookupIP(context.Background(), ip_version, domain_name[:len(domain_name)-1])
+
 	if err != nil {
 		log.Printf("Error resolving domain name: %v\n", err)
 		return "", err
 	}
 
-	return ips[0], nil
+	return ips[0].String(), nil
 }
