@@ -28,9 +28,9 @@ func ParseDNSQuery(query *dns.Msg) {
 	var ip_type string
 
 	log.Printf("DNS query received")
+
 	for _, q := range query.Question {
 		log.Printf("Query for %s\n", q.Name)
-
 		switch q.Qtype {
 		case dns.TypeA:
 			dns_type = "A"
@@ -39,7 +39,6 @@ func ParseDNSQuery(query *dns.Msg) {
 			dns_type = "AAAA"
 			ip_type = "ip6"
 		}
-
 		ip, _ := resolver.ResolveDomainName(q.Name, ip_type)
 		if ip != "" {
 			rr, err := dns.NewRR(fmt.Sprintf("%s %s %s", q.Name, dns_type, ip))
